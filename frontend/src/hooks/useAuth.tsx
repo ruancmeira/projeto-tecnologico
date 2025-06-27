@@ -1,6 +1,12 @@
-
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { User } from '@/types';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  ReactNode,
+} from "react";
+import { User } from "@/types";
+import { toast } from "@/components/ui/sonner";
 
 interface AuthContextType {
   user: User | null;
@@ -9,12 +15,21 @@ interface AuthContextType {
   isLoading: boolean;
 }
 
+interface LoginResponse {
+  access_token: string;
+  user: {
+    id: number;
+    name: string;
+    email: string;
+  };
+}
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
@@ -22,37 +37,74 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const API_URL = "http://127.0.0.1:3333/v1";
 
   useEffect(() => {
     // Check if user is stored in localStorage
-    const storedUser = localStorage.getItem('healthSystemUser');
-    if (storedUser) {
+    const storedUser = localStorage.getItem("healthSystemUser");
+    const storedToken = localStorage.getItem("healthSystemToken");
+
+    if (storedUser && storedToken) {
       setUser(JSON.parse(storedUser));
     }
     setIsLoading(false);
   }, []);
 
   const login = async (email: string, password: string): Promise<boolean> => {
-    // Mock authentication - in real app, this would call an API
-    if (email === 'admin@saude.com' && password === 'admin123') {
-      const mockUser: User = {
-        id: 1,
-        email: 'admin@saude.com',
-        name: 'Administrador',
-        password: 'admin123',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
-      };
-      setUser(mockUser);
-      localStorage.setItem('healthSystemUser', JSON.stringify(mockUser));
-      return true;
+    try {
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      // Tratamento conforme status code
+      if (response.ok) {
+        // 2xx status codes
+        const data: LoginResponse = await response.json();
+
+        // Create user object from response
+        const loggedInUser: User = {
+          id: data.user.id,
+          email: data.user.email,
+          name: data.user.name,
+          // We don't store the actual password for security reasons
+          password: "",
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        };
+
+        // Store user and token
+        setUser(loggedInUser);
+        localStorage.setItem("healthSystemUser", JSON.stringify(loggedInUser));
+        localStorage.setItem("healthSystemToken", data.access_token);
+
+        toast.success("Login realizado com sucesso!");
+        return true;
+      } else if (response.status >= 400 && response.status < 500) {
+        // 4xx errors
+        const errorData = await response.json().catch(() => null);
+        toast.warning("Credenciais inválidas. Verifique seu email e senha.");
+        return false;
+      } else {
+        // 5xx errors
+        toast.error("Erro no servidor. Tente novamente mais tarde.");
+        return false;
+      }
+    } catch (error) {
+      // Erro de conexão ou outros erros inesperados
+      toast.error("Erro ao conectar com o servidor. Verifique sua conexão.");
+      return false;
     }
-    return false;
   };
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('healthSystemUser');
+    localStorage.removeItem("healthSystemUser");
+    localStorage.removeItem("healthSystemToken");
+    toast.success("Logout realizado com sucesso!");
   };
 
   return (

@@ -1,15 +1,14 @@
-
-import { useAuth } from '@/hooks/useAuth';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { 
-  Home, 
-  Users, 
-  Stethoscope, 
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import {
+  Home,
+  Users,
+  Stethoscope,
   Calendar,
   UserCog,
-  LogOut
-} from 'lucide-react';
+  LogOut,
+} from "lucide-react";
 
 interface AdminSidebarProps {
   activeTab: string;
@@ -20,11 +19,11 @@ export const AdminSidebar = ({ activeTab, onTabChange }: AdminSidebarProps) => {
   const { user, logout } = useAuth();
 
   const menuItems = [
-    { id: 'home', label: 'HOME', icon: Home },
-    { id: 'users', label: 'USUÁRIOS', icon: UserCog },
-    { id: 'patients', label: 'PACIENTES', icon: Users },
-    { id: 'doctors', label: 'MÉDICOS', icon: Stethoscope },
-    { id: 'appointments', label: 'CONSULTAS', icon: Calendar },
+    { id: "home", label: "HOME", icon: Home },
+    { id: "users", label: "USUÁRIOS", icon: UserCog },
+    { id: "patients", label: "PACIENTES", icon: Users },
+    { id: "doctors", label: "MÉDICOS", icon: Stethoscope },
+    { id: "appointments", label: "CONSULTAS", icon: Calendar },
   ];
 
   return (
@@ -37,7 +36,9 @@ export const AdminSidebar = ({ activeTab, onTabChange }: AdminSidebarProps) => {
           </div>
           <div>
             <h2 className="font-bold text-xl text-gray-900">Gestão de Saúde</h2>
-            <p className="text-sm text-gray-700 font-medium">Painel Administrativo</p>
+            <p className="text-sm text-gray-700 font-medium">
+              Painel Administrativo
+            </p>
           </div>
         </div>
       </div>
@@ -53,8 +54,8 @@ export const AdminSidebar = ({ activeTab, onTabChange }: AdminSidebarProps) => {
                 variant={activeTab === item.id ? "default" : "ghost"}
                 className={cn(
                   "w-full justify-start gap-3 h-12 text-left font-semibold",
-                  activeTab === item.id 
-                    ? "bg-blue-600 text-white hover:bg-blue-700" 
+                  activeTab === item.id
+                    ? "bg-blue-600 text-white hover:bg-blue-700"
                     : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                 )}
                 onClick={() => onTabChange(item.id)}
@@ -81,7 +82,7 @@ export const AdminSidebar = ({ activeTab, onTabChange }: AdminSidebarProps) => {
         <Button
           variant="outline"
           size="sm"
-          className="w-full border-gray-300 text-gray-700 hover:bg-gray-100"
+          className="w-full border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-800 hover:border-slate-400 transition-all duration-200"
           onClick={logout}
         >
           <LogOut className="h-4 w-4 mr-2" />

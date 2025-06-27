@@ -1,88 +1,159 @@
-
-import { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { useAuth } from '@/hooks/useAuth';
-import { toast } from 'sonner';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useAuth } from "@/hooks/useAuth";
+import { Loader2, Mail, Lock, AlertCircle } from "lucide-react";
 
 export const LoginForm = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<{ email?: boolean; password?: boolean }>(
+    {}
+  );
   const { login } = useAuth();
+
+  const validate = () => {
+    const newErrors = {
+      email: !email,
+      password: !password,
+    };
+
+    setErrors(newErrors);
+    return !newErrors.email && !newErrors.password;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!validate()) {
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      const success = await login(email, password);
-      if (!success) {
-        toast.error('Credenciais inválidas. Tente: admin@saude.com / admin123');
-      }
+      await login(email, password);
     } catch (error) {
-      toast.error('Erro ao fazer login');
+      // Erro já tratado no hook useAuth
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-700 via-purple-700 to-green-700">
-      <Card className="w-full max-w-md mx-4 bg-white border-2 border-gray-300 shadow-2xl">
-        <CardHeader className="text-center">
-          <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl border-2 border-gray-200">
-            <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-green-600 rounded-full flex items-center justify-center">
-              <span className="text-white font-bold text-xl">G</span>
+    <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-br from-indigo-500/90 via-violet-500/90 to-purple-600/90">
+      <div className="w-full max-w-md px-6">
+        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+          <div className="p-8">
+            {/* Logo and header */}
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 text-indigo-500 mb-4">
+                <span className="text-2xl font-bold">G</span>
+              </div>
+              <h2 className="text-2xl font-bold text-slate-800">
+                Gestão de Saúde
+              </h2>
+              <p className="text-sm text-slate-500 mt-1">
+                Acesso administrativo
+              </p>
             </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-6" noValidate>
+              {/* Email field */}
+              <div className="space-y-1">
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                    <Mail size={18} />
+                  </div>
+                  <Input
+                    type="email"
+                    id="email"
+                    value={email}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (errors.email) setErrors({ ...errors, email: false });
+                    }}
+                    placeholder="Digite seu email"
+                    className={`pl-10 py-5 bg-white text-slate-800 rounded-lg focus-visible:ring-1 focus-visible:ring-offset-0 placeholder:text-slate-400 ${
+                      errors.email
+                        ? "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500"
+                        : "border-slate-200 focus-visible:border-slate-400 focus-visible:ring-slate-400"
+                    }`}
+                  />
+                </div>
+                {errors.email && (
+                  <div className="flex items-center text-red-500 text-xs mt-1 ml-1">
+                    <AlertCircle size={12} className="mr-1" />
+                    <span>Campo obrigatório</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Password field */}
+              <div className="space-y-1">
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                    <Lock size={18} />
+                  </div>
+                  <Input
+                    type="password"
+                    id="password"
+                    value={password}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      if (errors.password)
+                        setErrors({ ...errors, password: false });
+                    }}
+                    placeholder="Digite sua senha"
+                    className={`pl-10 py-5 bg-white text-slate-800 rounded-lg focus-visible:ring-1 focus-visible:ring-offset-0 placeholder:text-slate-400 ${
+                      errors.password
+                        ? "border-red-500 focus-visible:border-red-500 focus-visible:ring-red-500"
+                        : "border-slate-200 focus-visible:border-slate-400 focus-visible:ring-slate-400"
+                    }`}
+                  />
+                </div>
+                {errors.password && (
+                  <div className="flex items-center text-red-500 text-xs mt-1 ml-1">
+                    <AlertCircle size={12} className="mr-1" />
+                    <span>Campo obrigatório</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Login button */}
+              <Button
+                type="submit"
+                className="w-full py-5 bg-slate-800 hover:bg-slate-700 text-white text-base font-medium rounded-lg transition-all shadow-sm"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <div className="flex items-center justify-center">
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    <span>Entrando...</span>
+                  </div>
+                ) : (
+                  <span>Entrar</span>
+                )}
+              </Button>
+
+              {/* Credenciais de teste */}
+              <div className="mt-6 p-4 bg-slate-50 rounded-lg border border-slate-200 text-center">
+                <p className="text-sm font-medium text-slate-700 mb-1">
+                  Credenciais para teste:
+                </p>
+                <p className="text-sm text-slate-600">
+                  <span className="font-medium">Email:</span> admin@hospital.com
+                </p>
+                <p className="text-sm text-slate-600">
+                  <span className="font-medium">Senha:</span> admin123
+                </p>
+              </div>
+            </form>
           </div>
-          <CardTitle className="text-2xl font-bold text-gray-900">Gestão de Saúde</CardTitle>
-          <p className="text-gray-800 font-semibold">Acesso administrativo</p>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="email" className="text-gray-900 font-semibold">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="admin@saude.com"
-                required
-                className="mt-1 border-gray-300 focus:border-blue-500 text-gray-900 bg-white"
-              />
-            </div>
-            <div>
-              <Label htmlFor="password" className="text-gray-900 font-semibold">Senha</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-                className="mt-1 border-gray-300 focus:border-blue-500 text-gray-900 bg-white"
-              />
-            </div>
-            <Button 
-              type="submit" 
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold border-0" 
-              disabled={isLoading}
-            >
-              {isLoading ? 'Entrando...' : 'Entrar'}
-            </Button>
-          </form>
-          
-          <div className="mt-6 p-4 bg-white rounded-lg border-2 border-blue-200">
-            <p className="text-sm text-gray-900 font-semibold">Credenciais de teste:</p>
-            <p className="text-sm text-gray-800 font-medium">Email: admin@saude.com</p>
-            <p className="text-sm text-gray-800 font-medium">Senha: admin123</p>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 };
