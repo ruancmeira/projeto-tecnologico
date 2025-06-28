@@ -40,7 +40,7 @@ export const Dashboard = () => {
         <p className="text-slate-600 font-medium">Visão geral do sistema de saúde</p>
       </div>
 
-      {/* Stats Cards */}
+      
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <Card className="border border-slate-200 bg-white shadow-sm hover:shadow-md transition-shadow">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -87,7 +87,7 @@ export const Dashboard = () => {
         </Card>
       </div>
 
-      {/* Recent Appointments */}
+      
       <Card className="border border-slate-200 bg-white shadow-sm">
         <CardHeader>
           <CardTitle className="text-slate-800">Próximas Consultas</CardTitle>

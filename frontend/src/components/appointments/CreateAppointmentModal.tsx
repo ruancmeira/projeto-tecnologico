@@ -67,7 +67,7 @@ export const CreateAppointmentModal = ({
     doctorId: "",
   });
 
-  // Adicionar estado para controlar se o formulário foi submetido
+  
   const [formSubmitted, setFormSubmitted] = useState(false);
 
   useEffect(() => {
@@ -83,7 +83,7 @@ export const CreateAppointmentModal = ({
           patientId: selectedAppointment.patientId,
           doctorId: selectedAppointment.doctorId,
         });
-        // Limpar erros quando editar
+        
         setErrors({
           date: "",
           time: "",
@@ -110,7 +110,7 @@ export const CreateAppointmentModal = ({
     }
   }, [isOpen, selectedAppointment]);
 
-  // Efeito para validar o formulário quando formSubmitted é true
+  
   useEffect(() => {
     if (formSubmitted) {
       validateForm();
@@ -126,25 +126,25 @@ export const CreateAppointmentModal = ({
       doctorId: "",
     };
 
-    // Validar data
+    
     if (!formData.date) {
       newErrors.date = "Campo obrigatório";
       isValid = false;
     }
 
-    // Validar hora
+    
     if (!formData.time) {
       newErrors.time = "Campo obrigatório";
       isValid = false;
     }
 
-    // Validar paciente
+    
     if (!formData.patientId) {
       newErrors.patientId = "Selecione um paciente";
       isValid = false;
     }
 
-    // Validar médico
+    
     if (!formData.doctorId) {
       newErrors.doctorId = "Selecione um médico";
       isValid = false;
@@ -157,32 +157,32 @@ export const CreateAppointmentModal = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Marcar o formulário como submetido para ativar validações
+    
     setFormSubmitted(true);
 
-    // Validar o formulário
+    
     const isValid = validateForm();
     if (!isValid) {
       return;
     }
 
-    // Convert date string to Date object
+    
     const appointmentDate = new Date(formData.date + "T" + formData.time);
 
-    // Preparar os dados para envio
+    
     const appointmentData = {
       date: appointmentDate.toISOString(),
       time: formData.time,
       patientId: formData.patientId,
       doctorId: formData.doctorId,
-      // Para novas consultas, definir o status padrão como SCHEDULED
-      // O backend irá ignorar este campo na criação
+      
+      
       status: selectedAppointment ? formData.status : ("SCHEDULED" as const),
     };
 
     const success = await onSubmit(appointmentData);
 
-    // Se for bem-sucedido, fechar o modal
+    
     if (success) {
       handleClose();
     }
@@ -241,7 +241,7 @@ export const CreateAppointmentModal = ({
                 onChange={(e) => {
                   setFormData({ ...formData, date: e.target.value });
                   if (formSubmitted) {
-                    // Validar em tempo real se o formulário já foi submetido
+                    
                     if (e.target.value) {
                       setErrors({ ...errors, date: "" });
                     } else {
@@ -278,7 +278,7 @@ export const CreateAppointmentModal = ({
                 onChange={(e) => {
                   setFormData({ ...formData, time: e.target.value });
                   if (formSubmitted) {
-                    // Validar em tempo real se o formulário já foi submetido
+                    
                     if (e.target.value) {
                       setErrors({ ...errors, time: "" });
                     } else {
@@ -313,7 +313,7 @@ export const CreateAppointmentModal = ({
                 onValueChange={(value) => {
                   setFormData({ ...formData, patientId: parseInt(value) });
                   if (formSubmitted) {
-                    // Validar em tempo real se o formulário já foi submetido
+                    
                     setErrors({ ...errors, patientId: "" });
                   }
                 }}
@@ -359,7 +359,7 @@ export const CreateAppointmentModal = ({
                 onValueChange={(value) => {
                   setFormData({ ...formData, doctorId: parseInt(value) });
                   if (formSubmitted) {
-                    // Validar em tempo real se o formulário já foi submetido
+                    
                     setErrors({ ...errors, doctorId: "" });
                   }
                 }}

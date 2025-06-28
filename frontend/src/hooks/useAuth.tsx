@@ -40,7 +40,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const API_URL = "http://127.0.0.1:3333/v1";
 
   useEffect(() => {
-    // Check if user is stored in localStorage
     const storedUser = localStorage.getItem("healthSystemUser");
     const storedToken = localStorage.getItem("healthSystemToken");
 
@@ -60,23 +59,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         body: JSON.stringify({ email, password }),
       });
 
-      // Tratamento conforme status code
       if (response.ok) {
-        // 2xx status codes
         const data: LoginResponse = await response.json();
 
-        // Create user object from response
         const loggedInUser: User = {
           id: data.user.id,
           email: data.user.email,
           name: data.user.name,
-          // We don't store the actual password for security reasons
           password: "",
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
 
-        // Store user and token
         setUser(loggedInUser);
         localStorage.setItem("healthSystemUser", JSON.stringify(loggedInUser));
         localStorage.setItem("healthSystemToken", data.access_token);
@@ -84,17 +78,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         toast.success("Login realizado com sucesso!");
         return true;
       } else if (response.status >= 400 && response.status < 500) {
-        // 4xx errors
         const errorData = await response.json().catch(() => null);
         toast.warning("Credenciais inválidas. Verifique seu email e senha.");
         return false;
       } else {
-        // 5xx errors
         toast.error("Erro no servidor. Tente novamente mais tarde.");
         return false;
       }
     } catch (error) {
-      // Erro de conexão ou outros erros inesperados
       toast.error("Erro ao conectar com o servidor. Verifique sua conexão.");
       return false;
     }

@@ -8,12 +8,10 @@ export const useUsers = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Função para obter o token do localStorage
   const getAuthToken = () => {
     return localStorage.getItem("healthSystemToken");
   };
 
-  // Função para criar headers com autenticação
   const getAuthHeaders = () => {
     const token = getAuthToken();
     return {
@@ -22,7 +20,6 @@ export const useUsers = () => {
     };
   };
 
-  // Listar todos os usuários
   const fetchUsers = async (skipLoadingControl = false) => {
     if (!skipLoadingControl) {
       setLoading(true);
@@ -52,7 +49,6 @@ export const useUsers = () => {
     }
   };
 
-  // Buscar usuário por ID
   const getUserById = async (id: number): Promise<User | null> => {
     try {
       const response = await fetch(`${API_URL}/users/${id}`, {
@@ -78,7 +74,6 @@ export const useUsers = () => {
     return null;
   };
 
-  // Criar novo usuário
   const createUser = async (userData: {
     name: string;
     email: string;
@@ -86,7 +81,6 @@ export const useUsers = () => {
   }): Promise<boolean> => {
     setLoading(true);
 
-    // Delay para evidenciar o loader
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     try {
@@ -100,7 +94,6 @@ export const useUsers = () => {
 
       if (response.ok) {
         toast.success("Usuário cadastrado com sucesso!");
-        // Recarregar a lista completa para garantir dados atualizados
         await fetchUsers(true);
         setLoading(false);
         return true;
@@ -130,14 +123,12 @@ export const useUsers = () => {
     return false;
   };
 
-  // Atualizar usuário
   const updateUser = async (
     id: number,
     userData: { name: string; email: string }
   ): Promise<boolean> => {
     setLoading(true);
 
-    // Delay para evidenciar o loader
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     try {
@@ -149,7 +140,6 @@ export const useUsers = () => {
 
       if (response.ok) {
         toast.success("Usuário atualizado com sucesso!");
-        // Recarregar a lista completa para garantir dados atualizados
         await fetchUsers(true);
         setLoading(false);
         return true;
@@ -185,11 +175,9 @@ export const useUsers = () => {
     return false;
   };
 
-  // Deletar usuário
   const deleteUser = async (id: number, userName: string): Promise<boolean> => {
     setLoading(true);
 
-    // Delay para evidenciar o loader
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     try {
@@ -200,7 +188,6 @@ export const useUsers = () => {
 
       if (response.ok) {
         toast.success("Usuário removido com sucesso!");
-        // Recarregar a lista completa para garantir dados atualizados
         await fetchUsers(true);
         setLoading(false);
         return true;
@@ -224,7 +211,6 @@ export const useUsers = () => {
     return false;
   };
 
-  // Carregar usuários quando o hook é inicializado
   useEffect(() => {
     const token = getAuthToken();
     if (token) {
@@ -242,4 +228,3 @@ export const useUsers = () => {
     deleteUser,
   };
 };
- 

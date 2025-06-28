@@ -8,12 +8,10 @@ export const usePatients = () => {
   const [patients, setPatients] = useState<Patient[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Função para obter o token do localStorage
   const getAuthToken = () => {
     return localStorage.getItem("healthSystemToken");
   };
 
-  // Função para criar headers com autenticação
   const getAuthHeaders = () => {
     const token = getAuthToken();
     return {
@@ -22,7 +20,6 @@ export const usePatients = () => {
     };
   };
 
-  // Listar todos os pacientes
   const fetchPatients = async (skipLoadingControl = false) => {
     if (!skipLoadingControl) {
       setLoading(true);
@@ -52,7 +49,6 @@ export const usePatients = () => {
     }
   };
 
-  // Buscar paciente por ID
   const getPatientById = async (id: number): Promise<Patient | null> => {
     try {
       const response = await fetch(`${API_URL}/patients/${id}`, {
@@ -78,7 +74,6 @@ export const usePatients = () => {
     return null;
   };
 
-  // Criar novo paciente
   const createPatient = async (patientData: {
     name: string;
     cpf: string;
@@ -89,7 +84,6 @@ export const usePatients = () => {
   }): Promise<boolean> => {
     setLoading(true);
 
-    // Delay para evidenciar o loader
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     try {
@@ -101,7 +95,6 @@ export const usePatients = () => {
 
       if (response.ok) {
         toast.success("Paciente cadastrado com sucesso!");
-        // Recarregar a lista completa para garantir dados atualizados
         await fetchPatients(true);
         setLoading(false);
         return true;
@@ -134,7 +127,6 @@ export const usePatients = () => {
     return false;
   };
 
-  // Atualizar paciente
   const updatePatient = async (
     id: number,
     patientData: {
@@ -148,7 +140,6 @@ export const usePatients = () => {
   ): Promise<boolean> => {
     setLoading(true);
 
-    // Delay para evidenciar o loader
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     try {
@@ -160,7 +151,6 @@ export const usePatients = () => {
 
       if (response.ok) {
         toast.success("Paciente atualizado com sucesso!");
-        // Recarregar a lista completa para garantir dados atualizados
         await fetchPatients(true);
         setLoading(false);
         return true;
@@ -196,14 +186,12 @@ export const usePatients = () => {
     return false;
   };
 
-  // Deletar paciente
   const deletePatient = async (
     id: number,
     patientName: string
   ): Promise<boolean> => {
     setLoading(true);
 
-    // Delay para evidenciar o loader
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     try {
@@ -214,7 +202,6 @@ export const usePatients = () => {
 
       if (response.ok) {
         toast.success("Paciente removido com sucesso!");
-        // Recarregar a lista completa para garantir dados atualizados
         await fetchPatients(true);
         setLoading(false);
         return true;
@@ -238,7 +225,6 @@ export const usePatients = () => {
     return false;
   };
 
-  // Carregar pacientes quando o hook é inicializado
   useEffect(() => {
     const token = getAuthToken();
     if (token) {

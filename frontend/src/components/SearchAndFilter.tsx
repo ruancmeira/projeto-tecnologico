@@ -80,7 +80,7 @@ export const SearchAndFilter = () => {
         <p className="text-slate-600">Encontre informações rapidamente</p>
       </div>
 
-      {/* Search and Filter Controls */}
+      
       <Card className="border-slate-200 shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-slate-800">
@@ -152,7 +152,7 @@ export const SearchAndFilter = () => {
         </CardContent>
       </Card>
 
-      {/* Results */}
+      
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <h2 className="text-xl font-semibold text-slate-800">

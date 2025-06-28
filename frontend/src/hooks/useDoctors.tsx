@@ -8,12 +8,10 @@ export const useDoctors = () => {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Função para obter o token do localStorage
   const getAuthToken = () => {
     return localStorage.getItem("healthSystemToken");
   };
 
-  // Função para criar headers com autenticação
   const getAuthHeaders = () => {
     const token = getAuthToken();
     return {
@@ -22,7 +20,6 @@ export const useDoctors = () => {
     };
   };
 
-  // Listar todos os médicos
   const fetchDoctors = async (skipLoadingControl = false) => {
     if (!skipLoadingControl) {
       setLoading(true);
@@ -52,7 +49,6 @@ export const useDoctors = () => {
     }
   };
 
-  // Buscar médico por ID
   const getDoctorById = async (id: number): Promise<Doctor | null> => {
     try {
       const response = await fetch(`${API_URL}/doctors/${id}`, {
@@ -78,7 +74,6 @@ export const useDoctors = () => {
     return null;
   };
 
-  // Criar novo médico
   const createDoctor = async (doctorData: {
     name: string;
     cpf: string;
@@ -88,7 +83,6 @@ export const useDoctors = () => {
   }): Promise<boolean> => {
     setLoading(true);
 
-    // Delay para evidenciar o loader
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     try {
@@ -100,7 +94,6 @@ export const useDoctors = () => {
 
       if (response.ok) {
         toast.success("Médico cadastrado com sucesso!");
-        // Recarregar a lista completa para garantir dados atualizados
         await fetchDoctors(true);
         setLoading(false);
         return true;
@@ -133,7 +126,6 @@ export const useDoctors = () => {
     return false;
   };
 
-  // Atualizar médico
   const updateDoctor = async (
     id: number,
     doctorData: {
@@ -146,7 +138,6 @@ export const useDoctors = () => {
   ): Promise<boolean> => {
     setLoading(true);
 
-    // Delay para evidenciar o loader
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     try {
@@ -158,7 +149,6 @@ export const useDoctors = () => {
 
       if (response.ok) {
         toast.success("Médico atualizado com sucesso!");
-        // Recarregar a lista completa para garantir dados atualizados
         await fetchDoctors(true);
         setLoading(false);
         return true;
@@ -194,14 +184,12 @@ export const useDoctors = () => {
     return false;
   };
 
-  // Deletar médico
   const deleteDoctor = async (
     id: number,
     doctorName: string
   ): Promise<boolean> => {
     setLoading(true);
 
-    // Delay para evidenciar o loader
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     try {
@@ -212,7 +200,6 @@ export const useDoctors = () => {
 
       if (response.ok) {
         toast.success("Médico removido com sucesso!");
-        // Recarregar a lista completa para garantir dados atualizados
         await fetchDoctors(true);
         setLoading(false);
         return true;
@@ -236,7 +223,6 @@ export const useDoctors = () => {
     return false;
   };
 
-  // Carregar médicos quando o hook é inicializado
   useEffect(() => {
     const token = getAuthToken();
     if (token) {

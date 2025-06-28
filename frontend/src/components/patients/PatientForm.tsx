@@ -62,11 +62,11 @@ export const PatientForm = ({
     address?: boolean | string;
   }>({});
 
-  // Reset form when dialog opens/closes or selectedPatient changes
+  
   useEffect(() => {
     if (isOpen) {
       if (selectedPatient) {
-        // Format the date for the input element (YYYY-MM-DD)
+        
         let formattedDate = "";
         try {
           if (selectedPatient.birthDate) {
@@ -167,21 +167,21 @@ export const PatientForm = ({
     onClose();
   };
 
-  // Phone mask handler (format: (00) 00000-0000)
+  
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, ""); // Remove non-digits
+    let value = e.target.value.replace(/\D/g, ""); 
     let formattedValue = "";
 
     if (value.length > 0) {
-      // Format with parentheses for the area code
+      
       formattedValue = `(${value.substring(0, 2)}`;
 
       if (value.length > 2) {
-        // Add closing parenthesis and space after area code
+        
         formattedValue += `) ${value.substring(2, 7)}`;
 
         if (value.length > 7) {
-          // Add hyphen before the last 4 digits
+          
           formattedValue += `-${value.substring(7, 11)}`;
         }
       }
@@ -191,9 +191,9 @@ export const PatientForm = ({
     if (errors.phone) setErrors({ ...errors, phone: false });
   };
 
-  // CPF mask handler (format: 000.000.000-00)
+  
   const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, ""); // Remove non-digits
+    let value = e.target.value.replace(/\D/g, ""); 
     let formattedValue = "";
 
     if (value.length > 0) {

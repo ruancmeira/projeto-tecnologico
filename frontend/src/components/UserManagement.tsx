@@ -59,7 +59,7 @@ export const UserManagement = () => {
   };
 
   const handleView = async (user: User) => {
-    // Buscar dados atualizados do usuário
+    
     const updatedUser = await getUserById(user.id);
     if (updatedUser) {
       setViewingUser(updatedUser);

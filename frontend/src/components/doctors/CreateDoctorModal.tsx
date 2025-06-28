@@ -86,9 +86,9 @@ export const CreateDoctorModal = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  // CPF mask handler (format: 000.000.000-00)
+  
   const handleCpfChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/\D/g, ""); // Remove non-digits
+    let value = e.target.value.replace(/\D/g, ""); 
     let formattedValue = "";
 
     if (value.length > 0) {

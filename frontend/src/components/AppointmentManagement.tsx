@@ -28,7 +28,7 @@ export const AppointmentManagement = () => {
     useState<Appointment | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Carregar médicos e pacientes quando o componente montar
+  
   useEffect(() => {
     fetchDoctors();
     fetchPatients();
@@ -40,10 +40,10 @@ export const AppointmentManagement = () => {
     setIsSubmitting(true);
     try {
       if (selectedAppointment) {
-        // Update existing appointment
+        
         return await updateAppointment(selectedAppointment.id, appointmentData);
       } else {
-        // Create new appointment
+        
         return await createAppointment(appointmentData);
       }
     } finally {
@@ -115,7 +115,7 @@ export const AppointmentManagement = () => {
         </Button>
       </div>
 
-      {/* Appointments List */}
+      
       <AppointmentList
         appointments={appointments}
         patients={patients}

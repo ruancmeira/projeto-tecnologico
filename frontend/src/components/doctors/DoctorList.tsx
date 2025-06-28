@@ -19,14 +19,13 @@ export const DoctorList = ({
 }: DoctorListProps) => {
   if (doctors.length === 0 && !loading) {
     return (
-      <div className="text-center py-12 border border-dashed border-slate-300 rounded-lg bg-slate-50">
-        <Stethoscope className="h-12 w-12 text-slate-400 mx-auto mb-4" />
+      <div className="text-center py-12">
+        <Stethoscope className="h-16 w-16 text-slate-400 mx-auto mb-4" />
         <h3 className="text-lg font-medium text-slate-700 mb-2">
           Nenhum médico cadastrado
         </h3>
         <p className="text-slate-500">
-          Clique no botão "Novo Médico" para cadastrar o primeiro médico no
-          sistema.
+          Comece cadastrando o primeiro médico do sistema.
         </p>
       </div>
     );

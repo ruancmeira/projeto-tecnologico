@@ -67,7 +67,7 @@ export const PatientManagement = () => {
   };
 
   const handleView = async (patient: Patient) => {
-    // Buscar dados atualizados do paciente
+    
     const updatedPatient = await getPatientById(patient.id);
     if (updatedPatient) {
       setViewingPatient(updatedPatient);

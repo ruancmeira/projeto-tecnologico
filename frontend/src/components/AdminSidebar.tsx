@@ -28,7 +28,7 @@ export const AdminSidebar = ({ activeTab, onTabChange }: AdminSidebarProps) => {
 
   return (
     <div className="w-64 bg-white border-r-2 border-gray-300 h-screen flex flex-col shadow-lg">
-      {/* Header */}
+      
       <div className="p-6 border-b-2 border-gray-300">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-green-600 rounded-lg flex items-center justify-center">
@@ -43,7 +43,7 @@ export const AdminSidebar = ({ activeTab, onTabChange }: AdminSidebarProps) => {
         </div>
       </div>
 
-      {/* Navigation */}
+      
       <nav className="flex-1 p-4">
         <div className="space-y-2">
           {menuItems.map((item) => {
@@ -68,7 +68,7 @@ export const AdminSidebar = ({ activeTab, onTabChange }: AdminSidebarProps) => {
         </div>
       </nav>
 
-      {/* User Info */}
+      
       <div className="p-4 border-t-2 border-gray-300">
         <div className="flex items-center gap-3 mb-3">
           <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">

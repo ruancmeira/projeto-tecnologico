@@ -1,7 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Patient } from "@/types";
-import { Edit, Trash2, Eye } from "lucide-react";
+import { Edit, Trash2, Eye, User } from "lucide-react";
 
 interface PatientListProps {
   patients: Patient[];
@@ -50,8 +50,14 @@ export const PatientList = ({
 
   if (patients.length === 0 && !loading) {
     return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-slate-500">Nenhum paciente encontrado.</div>
+      <div className="text-center py-12">
+        <User className="h-16 w-16 text-slate-400 mx-auto mb-4" />
+        <h3 className="text-lg font-medium text-slate-700 mb-2">
+          Nenhum paciente cadastrado
+        </h3>
+        <p className="text-slate-500">
+          Comece cadastrando o primeiro paciente do sistema.
+        </p>
       </div>
     );
   }

@@ -51,7 +51,7 @@ export const LoginForm = () => {
     try {
       await login(email, password);
     } catch (error) {
-      // Erro já tratado no hook useAuth
+      
     } finally {
       setIsLoading(false);
     }
@@ -62,7 +62,7 @@ export const LoginForm = () => {
       <div className="w-full max-w-md px-6">
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
           <div className="p-8">
-            {/* Logo and header */}
+            
             <div className="text-center mb-8">
               <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 text-indigo-500 mb-4">
                 <span className="text-2xl font-bold">G</span>
@@ -75,9 +75,9 @@ export const LoginForm = () => {
               </p>
             </div>
 
-            {/* Form */}
+            
             <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-              {/* Email field */}
+              
               <div className="space-y-1">
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
@@ -111,7 +111,7 @@ export const LoginForm = () => {
                 )}
               </div>
 
-              {/* Password field */}
+              
               <div className="space-y-1">
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
@@ -146,7 +146,7 @@ export const LoginForm = () => {
                 )}
               </div>
 
-              {/* Login button */}
+              
               <Button
                 type="submit"
                 className="w-full py-5 bg-slate-800 hover:bg-slate-700 text-white text-base font-medium rounded-lg transition-all shadow-sm"
@@ -162,7 +162,7 @@ export const LoginForm = () => {
                 )}
               </Button>
 
-              {/* Credenciais de teste */}
+              
               <div className="mt-6 p-4 bg-slate-50 rounded-lg border border-slate-200 text-center">
                 <p className="text-sm font-medium text-slate-700 mb-1">
                   Credenciais para teste:

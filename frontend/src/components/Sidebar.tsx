@@ -29,7 +29,6 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
         collapsed ? "w-16" : "w-64"
       )}
     >
-      {/* Header */}
       <div className="p-4 border-b border-border">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-green-500 rounded-lg flex items-center justify-center">
@@ -44,7 +43,6 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
         </div>
       </div>
 
-      {/* Navigation */}
       <nav className="flex-1 p-4">
         <div className="space-y-2">
           {menuItems.map((item) => {
@@ -67,7 +65,6 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
         </div>
       </nav>
 
-      {/* User Info */}
       <div className="p-4 border-t border-border">
         <div className="flex items-center gap-3 mb-3">
           <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">

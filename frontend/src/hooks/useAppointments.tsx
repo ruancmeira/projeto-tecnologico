@@ -8,12 +8,10 @@ export const useAppointments = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Função para obter o token do localStorage
   const getAuthToken = () => {
     return localStorage.getItem("healthSystemToken");
   };
 
-  // Função para criar headers com autenticação
   const getAuthHeaders = () => {
     const token = getAuthToken();
     return {
@@ -22,7 +20,6 @@ export const useAppointments = () => {
     };
   };
 
-  // Listar todas as consultas
   const fetchAppointments = async (skipLoadingControl = false) => {
     if (!skipLoadingControl) {
       setLoading(true);
@@ -52,7 +49,6 @@ export const useAppointments = () => {
     }
   };
 
-  // Buscar consulta por ID
   const getAppointmentById = async (
     id: number
   ): Promise<Appointment | null> => {
@@ -80,7 +76,6 @@ export const useAppointments = () => {
     return null;
   };
 
-  // Criar nova consulta
   const createAppointment = async (appointmentData: {
     date: string;
     time: string;
@@ -90,11 +85,9 @@ export const useAppointments = () => {
   }): Promise<boolean> => {
     setLoading(true);
 
-    // Delay para evidenciar o loader
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     try {
-      // Remover o status do objeto antes de enviar para o backend
       const { status, ...dataToSend } = appointmentData;
 
       const response = await fetch(`${API_URL}/appointments`, {
@@ -105,7 +98,6 @@ export const useAppointments = () => {
 
       if (response.ok) {
         toast.success("Consulta agendada com sucesso!");
-        // Recarregar a lista completa para garantir dados atualizados
         await fetchAppointments(true);
         setLoading(false);
         return true;
@@ -138,7 +130,6 @@ export const useAppointments = () => {
     return false;
   };
 
-  // Atualizar consulta
   const updateAppointment = async (
     id: number,
     appointmentData: {
@@ -151,7 +142,6 @@ export const useAppointments = () => {
   ): Promise<boolean> => {
     setLoading(true);
 
-    // Delay para evidenciar o loader
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     try {
@@ -163,7 +153,6 @@ export const useAppointments = () => {
 
       if (response.ok) {
         toast.success("Consulta atualizada com sucesso!");
-        // Recarregar a lista completa para garantir dados atualizados
         await fetchAppointments(true);
         setLoading(false);
         return true;
@@ -199,14 +188,12 @@ export const useAppointments = () => {
     return false;
   };
 
-  // Deletar consulta
   const deleteAppointment = async (
     id: number,
     patientName: string
   ): Promise<boolean> => {
     setLoading(true);
 
-    // Delay para evidenciar o loader
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     try {
@@ -217,7 +204,6 @@ export const useAppointments = () => {
 
       if (response.ok) {
         toast.success("Consulta removida com sucesso!");
-        // Recarregar a lista completa para garantir dados atualizados
         await fetchAppointments(true);
         setLoading(false);
         return true;
@@ -241,11 +227,9 @@ export const useAppointments = () => {
     return false;
   };
 
-  // Confirmar consulta
   const confirmAppointment = async (id: number): Promise<boolean> => {
     setLoading(true);
 
-    // Delay para evidenciar o loader
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     try {
@@ -256,7 +240,6 @@ export const useAppointments = () => {
 
       if (response.ok) {
         toast.success("Consulta confirmada com sucesso!");
-        // Recarregar a lista completa para garantir dados atualizados
         await fetchAppointments(true);
         setLoading(false);
         return true;
@@ -280,11 +263,9 @@ export const useAppointments = () => {
     return false;
   };
 
-  // Cancelar consulta
   const cancelAppointment = async (id: number): Promise<boolean> => {
     setLoading(true);
 
-    // Delay para evidenciar o loader
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     try {
@@ -295,7 +276,6 @@ export const useAppointments = () => {
 
       if (response.ok) {
         toast.success("Consulta cancelada com sucesso!");
-        // Recarregar a lista completa para garantir dados atualizados
         await fetchAppointments(true);
         setLoading(false);
         return true;
@@ -319,11 +299,9 @@ export const useAppointments = () => {
     return false;
   };
 
-  // Concluir consulta
   const completeAppointment = async (id: number): Promise<boolean> => {
     setLoading(true);
 
-    // Delay para evidenciar o loader
     await new Promise((resolve) => setTimeout(resolve, 500));
 
     try {
@@ -334,7 +312,6 @@ export const useAppointments = () => {
 
       if (response.ok) {
         toast.success("Consulta concluída com sucesso!");
-        // Recarregar a lista completa para garantir dados atualizados
         await fetchAppointments(true);
         setLoading(false);
         return true;
@@ -358,7 +335,6 @@ export const useAppointments = () => {
     return false;
   };
 
-  // Carregar consultas quando o hook é inicializado
   useEffect(() => {
     const token = getAuthToken();
     if (token) {

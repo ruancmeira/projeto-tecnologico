@@ -12,7 +12,7 @@ interface AppointmentType {
   id: string;
   name: string;
   description: string;
-  duration: number; // em minutos
+  duration: number; 
   createdAt: string;
 }
 

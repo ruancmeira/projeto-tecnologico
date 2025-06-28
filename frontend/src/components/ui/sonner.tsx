@@ -2,7 +2,7 @@ import { useTheme } from "next-themes";
 import {
   Toaster as Sonner,
   toast as sonnerToast,
-  // type Toast as SonnerToast,
+  
 } from "sonner";
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
@@ -25,12 +25,12 @@ const Toaster = ({ ...props }: ToasterProps) => {
   );
 };
 
-// Define styled toast functions with appropriate colors
+
 const toast = {
-  // Base methods from sonnerToast
+  
   ...sonnerToast,
 
-  // Success toast - green
+  
   success: (message: string) =>
     sonnerToast("Sucesso!", {
       description: message,
@@ -52,7 +52,7 @@ const toast = {
       },
     }),
 
-  // Error toast - red (for 5xx errors)
+  
   error: (message: string) =>
     sonnerToast("Erro!", {
       description: message,
@@ -74,7 +74,7 @@ const toast = {
       },
     }),
 
-  // Warning toast - amber/orange (for 4xx errors)
+  
   warning: (message: string) =>
     sonnerToast("Atenção!", {
       description: message,
@@ -96,7 +96,7 @@ const toast = {
       },
     }),
 
-  // Info toast - blue
+  
   info: (message: string) =>
     sonnerToast("Informação!", {
       description: message,
