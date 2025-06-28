@@ -50,24 +50,16 @@ export const Reports = () => {
     .slice(0, 6);
 
   const generatePDF = () => {
-    toast.info("Geração de PDF", {
+    toast.info("Recurso em desenvolvimento", {
       description:
-        "Para implementar a geração de PDF, conecte o projeto ao Supabase através do botão verde no canto superior direito.",
-      action: {
-        label: "Saiba mais",
-        onClick: () =>
-          window.open(
-            "https://docs.lovable.dev/integrations/supabase/",
-            "_blank"
-          ),
-      },
+        "A geração de PDF está em desenvolvimento e será implementada em uma versão futura.",
     });
   };
 
   const exportData = () => {
-    toast.info("Exportação de dados", {
+    toast.info("Recurso em desenvolvimento", {
       description:
-        "Funcionalidade de exportação será implementada com integração ao backend.",
+        "A exportação de dados está em desenvolvimento e será implementada em uma versão futura.",
     });
   };
 
@@ -263,30 +255,30 @@ export const Reports = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {recentActivity.map((activity, index) => {
-                const IconComponent = activity.icon;
+              {recentActivity.map((activity, i) => {
+                const Icon = activity.icon;
                 return (
                   <div
-                    key={index}
-                    className="flex items-start space-x-3 p-3 rounded-lg bg-slate-50 hover:bg-slate-100 transition-colors"
+                    key={i}
+                    className="flex items-center gap-3 border-b border-slate-100 pb-3"
                   >
-                    <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                      <IconComponent className="h-4 w-4 text-blue-600" />
+                    <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center flex-shrink-0">
+                      <Icon className="h-5 w-5 text-slate-600" />
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm text-slate-900">
+                    <div className="flex-1">
+                      <p className="text-slate-600 text-sm font-medium">
                         {activity.type}
                       </p>
-                      <p className="text-sm text-slate-600 truncate">
+                      <p className="text-slate-800 font-medium truncate">
                         {activity.description}
                       </p>
-                      <p className="text-xs text-slate-500 mt-1">
-                        {new Date(activity.date).toLocaleDateString("pt-BR")} às{" "}
-                        {new Date(activity.date).toLocaleTimeString("pt-BR", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
+                    </div>
+                    <div className="text-xs text-slate-500">
+                      {new Date(activity.date).toLocaleDateString("pt-BR")} às{" "}
+                      {new Date(activity.date).toLocaleTimeString("pt-BR", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      })}
                     </div>
                   </div>
                 );
