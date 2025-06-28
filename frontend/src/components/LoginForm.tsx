@@ -8,19 +8,35 @@ export const LoginForm = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<{ email?: boolean; password?: boolean }>(
-    {}
-  );
+  const [errors, setErrors] = useState<{
+    email?: boolean | string;
+    password?: boolean | string;
+  }>({});
   const { login } = useAuth();
 
+  const validateEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
   const validate = () => {
-    const newErrors = {
-      email: !email,
-      password: !password,
-    };
+    const newErrors: {
+      email?: boolean | string;
+      password?: boolean | string;
+    } = {};
+
+    if (!email) {
+      newErrors.email = "Campo obrigatório";
+    } else if (!validateEmail(email)) {
+      newErrors.email = "Email inválido";
+    }
+
+    if (!password) {
+      newErrors.password = "Campo obrigatório";
+    }
 
     setErrors(newErrors);
-    return !newErrors.email && !newErrors.password;
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -86,7 +102,11 @@ export const LoginForm = () => {
                 {errors.email && (
                   <div className="flex items-center text-red-500 text-xs mt-1 ml-1">
                     <AlertCircle size={12} className="mr-1" />
-                    <span>Campo obrigatório</span>
+                    <span>
+                      {typeof errors.email === "string"
+                        ? errors.email
+                        : "Campo obrigatório"}
+                    </span>
                   </div>
                 )}
               </div>
@@ -117,7 +137,11 @@ export const LoginForm = () => {
                 {errors.password && (
                   <div className="flex items-center text-red-500 text-xs mt-1 ml-1">
                     <AlertCircle size={12} className="mr-1" />
-                    <span>Campo obrigatório</span>
+                    <span>
+                      {typeof errors.password === "string"
+                        ? errors.password
+                        : "Campo obrigatório"}
+                    </span>
                   </div>
                 )}
               </div>
