@@ -1,54 +1,64 @@
-
-import { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Dialog } from '@/components/ui/dialog';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { mockPatients } from '@/data/mockData';
-import { Patient } from '@/types';
-import { User } from 'lucide-react';
-import { toast } from 'sonner';
-import { PatientForm, PatientFormData } from './patients/PatientForm';
-import { PatientList } from './patients/PatientList';
-import { PatientProfile } from './patients/PatientProfile';
-import { CreatePatientModal } from './patients/CreatePatientModal';
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { X } from "lucide-react";
+import { Patient } from "@/types";
+import { User } from "lucide-react";
+import { PatientForm, PatientFormData } from "./patients/PatientForm";
+import { PatientList } from "./patients/PatientList";
+import { PatientProfile } from "./patients/PatientProfile";
+import { CreatePatientModal } from "./patients/CreatePatientModal";
+import { usePatients } from "@/hooks/usePatients";
 
 export const PatientManagement = () => {
-  const [patients, setPatients] = useState<Patient[]>(mockPatients);
+  const {
+    patients,
+    loading,
+    getPatientById,
+    createPatient,
+    updatePatient,
+    deletePatient,
+  } = usePatients();
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [viewingPatient, setViewingPatient] = useState<Patient | null>(null);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [patientToDelete, setPatientToDelete] = useState<{ id: number; name: string } | null>(null);
+  const [patientToDelete, setPatientToDelete] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const handleSubmit = (formData: PatientFormData) => {
+  const handleSubmit = async (formData: PatientFormData) => {
     if (selectedPatient) {
-      const updatedPatients = patients.map(p => 
-        p.id === selectedPatient.id 
-          ? { ...p, ...formData, updatedAt: new Date().toISOString() }
-          : p
-      );
-      setPatients(updatedPatients);
-      toast.success('Paciente atualizado com sucesso!', {
-        description: `${formData.name} foi atualizado no sistema.`
-      });
+      const success = await updatePatient(selectedPatient.id, formData);
+      if (success) {
+        setIsDialogOpen(false);
+        setSelectedPatient(null);
+      }
     }
-
-    setIsDialogOpen(false);
-    setSelectedPatient(null);
   };
 
-  const handleCreateSubmit = (patientData: Omit<Patient, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const newPatient: Patient = {
-      id: Math.max(...patients.map(p => p.id)) + 1,
-      ...patientData,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    setPatients([...patients, newPatient]);
-    toast.success('Paciente cadastrado com sucesso!', {
-      description: `${patientData.name} foi adicionado ao sistema.`
-    });
+  const handleCreateSubmit = async (patientData: {
+    name: string;
+    cpf: string;
+    birthDate: string;
+    phone: string;
+    email: string;
+    address: string;
+  }): Promise<boolean> => {
+    const success = await createPatient(patientData);
+    if (success) {
+      setIsCreateModalOpen(false);
+    }
+    return success;
   };
 
   const handleEdit = (patient: Patient) => {
@@ -56,22 +66,33 @@ export const PatientManagement = () => {
     setIsDialogOpen(true);
   };
 
-  const handleView = (patient: Patient) => {
-    setViewingPatient(patient);
-    setIsProfileOpen(true);
+  const handleView = async (patient: Patient) => {
+    // Buscar dados atualizados do paciente
+    const updatedPatient = await getPatientById(patient.id);
+    if (updatedPatient) {
+      setViewingPatient(updatedPatient);
+      setIsProfileOpen(true);
+    }
   };
 
   const handleDelete = (patientId: number, patientName: string) => {
     setPatientToDelete({ id: patientId, name: patientName });
   };
 
-  const confirmDelete = () => {
-    if (patientToDelete) {
-      setPatients(patients.filter(p => p.id !== patientToDelete.id));
-      toast.success('Paciente removido com sucesso!', {
-        description: `${patientToDelete.name} foi removido do sistema.`
-      });
-      setPatientToDelete(null);
+  const confirmDelete = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (patientToDelete && !isDeleting) {
+      setIsDeleting(true);
+      const success = await deletePatient(
+        patientToDelete.id,
+        patientToDelete.name
+      );
+      setIsDeleting(false);
+      if (success) {
+        setPatientToDelete(null);
+      }
     }
   };
 
@@ -80,17 +101,38 @@ export const PatientManagement = () => {
     setSelectedPatient(null);
   };
 
+  if (loading && patients.length === 0) {
+    return (
+      <div className="space-y-8">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-4xl font-bold text-slate-800">PACIENTES</h1>
+            <p className="text-slate-600 font-medium mt-2">
+              Gerencie pacientes do sistema
+            </p>
+          </div>
+        </div>
+        <div className="flex justify-center items-center h-64">
+          <div className="text-slate-600">Carregando pacientes...</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-4xl font-bold text-slate-800">PACIENTES</h1>
-          <p className="text-slate-600 font-medium mt-2">Cadastre e gerencie informações dos pacientes</p>
+          <p className="text-slate-600 font-medium mt-2">
+            Gerencie pacientes do sistema
+          </p>
         </div>
-        
-        <Button 
-          onClick={() => setIsCreateModalOpen(true)} 
-          className="bg-emerald-600 hover:bg-emerald-700 text-white border-0"
+
+        <Button
+          onClick={() => setIsCreateModalOpen(true)}
+          className="bg-slate-800 hover:bg-slate-700 text-white"
+          disabled={loading || isDeleting}
         >
           <User className="h-4 w-4 mr-2" />
           Novo Paciente
@@ -102,6 +144,7 @@ export const PatientManagement = () => {
         onEdit={handleEdit}
         onView={handleView}
         onDelete={handleDelete}
+        loading={loading || isDeleting}
       />
 
       <Dialog open={isDialogOpen} onOpenChange={handleDialogClose}>
@@ -110,6 +153,7 @@ export const PatientManagement = () => {
           onClose={handleDialogClose}
           onSubmit={handleSubmit}
           selectedPatient={selectedPatient}
+          loading={loading || isDeleting}
         />
       </Dialog>
 
@@ -117,6 +161,7 @@ export const PatientManagement = () => {
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}
         onSubmit={handleCreateSubmit}
+        loading={loading || isDeleting}
       />
 
       <PatientProfile
@@ -125,22 +170,53 @@ export const PatientManagement = () => {
         onClose={() => setIsProfileOpen(false)}
       />
 
-      <AlertDialog open={!!patientToDelete} onOpenChange={() => setPatientToDelete(null)}>
-        <AlertDialogContent className="bg-white">
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tem certeza que deseja excluir o paciente <strong>{patientToDelete?.name}</strong>? Esta ação não pode ser desfeita.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
-              Excluir
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <Dialog
+        open={!!patientToDelete}
+        onOpenChange={(open) => {
+          if (!open && !isDeleting) {
+            setPatientToDelete(null);
+          }
+        }}
+      >
+        <DialogContent className="max-w-md bg-white">
+          <button
+            onClick={() => !isDeleting && setPatientToDelete(null)}
+            className="absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-2 disabled:pointer-events-none bg-white hover:bg-slate-50 text-slate-500"
+            disabled={isDeleting}
+          >
+            <X className="h-4 w-4" />
+            <span className="sr-only">Close</span>
+          </button>
+          <DialogHeader>
+            <DialogTitle className="text-2xl text-slate-800">
+              Confirmar exclusão
+            </DialogTitle>
+            <DialogDescription className="text-slate-500">
+              Tem certeza que deseja excluir o paciente{" "}
+              <strong>{patientToDelete?.name}</strong>? Esta ação não pode ser
+              desfeita.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-3 pt-4">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => !isDeleting && setPatientToDelete(null)}
+              disabled={isDeleting}
+              className="bg-white border-slate-200 text-slate-700 hover:bg-slate-50"
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={confirmDelete}
+              className="bg-slate-800 hover:bg-slate-700 text-white"
+              disabled={isDeleting}
+            >
+              {isDeleting ? "Excluindo..." : "Excluir"}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
