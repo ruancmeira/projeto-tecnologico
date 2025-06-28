@@ -9,8 +9,8 @@ COPY backend/package*.json ./
 RUN npm install
 
 COPY backend/ ./
-RUN npm run build
 RUN npx prisma generate
+RUN npm run build
 
 # Stage 2: Build do Frontend
 FROM node:18-alpine AS frontend-build
