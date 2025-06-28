@@ -2,6 +2,7 @@ import {
   Injectable,
   ConflictException,
   NotFoundException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateUserDto } from '../auth/dto/create-user.dto';
@@ -80,6 +81,20 @@ export class UsersService {
   async update(id: number, updateUserDto: UpdateUserDto) {
     await this.findOne(id);
 
+    if (id === 1) {
+      if (updateUserDto.password) {
+        throw new ForbiddenException(
+          'Não é permitido alterar a senha do administrador',
+        );
+      }
+
+      if (updateUserDto.email) {
+        throw new ForbiddenException(
+          'Não é permitido alterar o e-mail do administrador',
+        );
+      }
+    }
+
     const updateData: any = { ...updateUserDto };
     if (updateUserDto.password) {
       updateData.password = await bcrypt.hash(updateUserDto.password, 10);
@@ -109,6 +124,12 @@ export class UsersService {
   }
 
   async remove(id: number) {
+    if (id === 1) {
+      throw new ForbiddenException(
+        'Não é permitido excluir o usuário administrador',
+      );
+    }
+
     await this.findOne(id);
 
     await this.prisma.user.delete({

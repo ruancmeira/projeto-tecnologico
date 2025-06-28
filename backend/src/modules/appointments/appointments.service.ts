@@ -188,4 +188,62 @@ export class AppointmentsService {
   async complete(id: number) {
     return this.update(id, { status: $Enums.AppointmentStatus.COMPLETED });
   }
+
+  async getDashboardData() {
+    try {
+      const totalPatients = await this.prisma.patient.count();
+      const totalDoctors = await this.prisma.doctor.count();
+      const totalAppointments = await this.prisma.appointment.count();
+
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      const appointmentsToday = await this.prisma.appointment.count({
+        where: {
+          date: {
+            gte: today,
+            lt: tomorrow,
+          },
+        },
+      });
+
+      const upcomingAppointments = await this.prisma.appointment.findMany({
+        where: {
+          date: {
+            gte: today,
+          },
+        },
+        include: {
+          patient: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+          doctor: {
+            select: {
+              id: true,
+              name: true,
+              specialty: true,
+            },
+          },
+        },
+        orderBy: [{ date: 'asc' }, { time: 'asc' }],
+        take: 5,
+      });
+
+      return {
+        totalPatients,
+        totalDoctors,
+        totalAppointments,
+        appointmentsToday,
+        upcomingAppointments,
+      };
+    } catch (error) {
+      console.error('Erro ao buscar dados do dashboard:', error);
+      throw error;
+    }
+  }
 }

@@ -2,6 +2,7 @@ import {
   Injectable,
   ConflictException,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreatePatientDto } from './dto/create-patient.dto';
@@ -106,6 +107,16 @@ export class PatientsService {
 
   async remove(id: number) {
     await this.findOne(id);
+
+    const appointments = await this.prisma.appointment.count({
+      where: { patientId: id },
+    });
+
+    if (appointments > 0) {
+      throw new BadRequestException(
+        'Não é possível excluir um paciente que possui consultas agendadas',
+      );
+    }
 
     await this.prisma.patient.delete({
       where: { id },

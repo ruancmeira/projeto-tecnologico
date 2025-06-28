@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Appointment } from "@/types";
 import { toast } from "@/components/ui/sonner";
 
@@ -8,17 +8,17 @@ export const useAppointments = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const getAuthToken = () => {
+  const getAuthToken = useCallback(() => {
     return localStorage.getItem("healthSystemToken");
-  };
+  }, []);
 
-  const getAuthHeaders = () => {
+  const getAuthHeaders = useCallback(() => {
     const token = getAuthToken();
     return {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     };
-  };
+  }, [getAuthToken]);
 
   const fetchAppointments = async (skipLoadingControl = false) => {
     if (!skipLoadingControl) {
@@ -335,6 +335,32 @@ export const useAppointments = () => {
     return false;
   };
 
+  const fetchDashboardData = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/dashboard`, {
+        method: "GET",
+        headers: getAuthHeaders(),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setLoading(false);
+        return data;
+      } else if (response.status === 401) {
+        toast.warning("Sessão expirada. Faça login novamente.");
+        setLoading(false);
+      } else {
+        toast.error("Erro ao carregar dados do dashboard.");
+        setLoading(false);
+      }
+    } catch (error) {
+      toast.error("Erro ao conectar com o servidor. Verifique sua conexão.");
+      setLoading(false);
+    }
+    return null;
+  }, [getAuthHeaders]);
+
   useEffect(() => {
     const token = getAuthToken();
     if (token) {
@@ -353,5 +379,6 @@ export const useAppointments = () => {
     confirmAppointment,
     cancelAppointment,
     completeAppointment,
+    fetchDashboardData,
   };
 };
