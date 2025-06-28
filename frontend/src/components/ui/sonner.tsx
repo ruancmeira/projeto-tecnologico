@@ -18,6 +18,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       position="bottom-right"
       toastOptions={{
         unstyled: true,
+        className: "fixed bottom-4 right-4",
       }}
       {...props}
     />

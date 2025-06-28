@@ -1,0 +1,381 @@
+import { useState, useEffect } from "react";
+import { Appointment } from "@/types";
+import { toast } from "@/components/ui/sonner";
+
+const API_URL = "http://127.0.0.1:3333/v1";
+
+export const useAppointments = () => {
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  // Função para obter o token do localStorage
+  const getAuthToken = () => {
+    return localStorage.getItem("healthSystemToken");
+  };
+
+  // Função para criar headers com autenticação
+  const getAuthHeaders = () => {
+    const token = getAuthToken();
+    return {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    };
+  };
+
+  // Listar todas as consultas
+  const fetchAppointments = async (skipLoadingControl = false) => {
+    if (!skipLoadingControl) {
+      setLoading(true);
+    }
+    try {
+      const response = await fetch(`${API_URL}/appointments`, {
+        method: "GET",
+        headers: getAuthHeaders(),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setAppointments(data);
+      } else if (response.status === 401) {
+        toast.warning("Sessão expirada. Faça login novamente.");
+      } else if (response.status >= 500) {
+        toast.error("Erro no servidor. Tente novamente mais tarde.");
+      } else {
+        toast.warning("Erro ao carregar consultas.");
+      }
+    } catch (error) {
+      toast.error("Erro ao conectar com o servidor. Verifique sua conexão.");
+    } finally {
+      if (!skipLoadingControl) {
+        setLoading(false);
+      }
+    }
+  };
+
+  // Buscar consulta por ID
+  const getAppointmentById = async (
+    id: number
+  ): Promise<Appointment | null> => {
+    try {
+      const response = await fetch(`${API_URL}/appointments/${id}`, {
+        method: "GET",
+        headers: getAuthHeaders(),
+      });
+
+      if (response.ok) {
+        const appointment = await response.json();
+        return appointment;
+      } else if (response.status === 404) {
+        toast.warning("Consulta não encontrada.");
+      } else if (response.status === 401) {
+        toast.warning("Sessão expirada. Faça login novamente.");
+      } else if (response.status >= 500) {
+        toast.error("Erro no servidor. Tente novamente mais tarde.");
+      } else {
+        toast.warning("Erro ao carregar consulta.");
+      }
+    } catch (error) {
+      toast.error("Erro ao conectar com o servidor. Verifique sua conexão.");
+    }
+    return null;
+  };
+
+  // Criar nova consulta
+  const createAppointment = async (appointmentData: {
+    date: string;
+    time: string;
+    patientId: number;
+    doctorId: number;
+    status?: "SCHEDULED" | "CONFIRMED" | "CANCELLED" | "COMPLETED";
+  }): Promise<boolean> => {
+    setLoading(true);
+
+    // Delay para evidenciar o loader
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    try {
+      // Remover o status do objeto antes de enviar para o backend
+      const { status, ...dataToSend } = appointmentData;
+
+      const response = await fetch(`${API_URL}/appointments`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(dataToSend),
+      });
+
+      if (response.ok) {
+        toast.success("Consulta agendada com sucesso!");
+        // Recarregar a lista completa para garantir dados atualizados
+        await fetchAppointments(true);
+        setLoading(false);
+        return true;
+      } else if (response.status === 400) {
+        const errorData = await response.json().catch(() => null);
+        if (errorData?.message) {
+          if (Array.isArray(errorData.message)) {
+            toast.warning("Dados inválidos: " + errorData.message.join(", "));
+          } else {
+            toast.warning(errorData.message);
+          }
+        } else {
+          toast.warning("Dados inválidos ou conflito de horário.");
+        }
+        setLoading(false);
+      } else if (response.status === 401) {
+        toast.warning("Sessão expirada. Faça login novamente.");
+        setLoading(false);
+      } else if (response.status >= 500) {
+        toast.error("Erro no servidor. Tente novamente mais tarde.");
+        setLoading(false);
+      } else {
+        toast.warning("Erro ao agendar consulta.");
+        setLoading(false);
+      }
+    } catch (error) {
+      toast.error("Erro ao conectar com o servidor. Verifique sua conexão.");
+      setLoading(false);
+    }
+    return false;
+  };
+
+  // Atualizar consulta
+  const updateAppointment = async (
+    id: number,
+    appointmentData: {
+      date?: string;
+      time?: string;
+      patientId?: number;
+      doctorId?: number;
+      status?: "SCHEDULED" | "CONFIRMED" | "CANCELLED" | "COMPLETED";
+    }
+  ): Promise<boolean> => {
+    setLoading(true);
+
+    // Delay para evidenciar o loader
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    try {
+      const response = await fetch(`${API_URL}/appointments/${id}`, {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(appointmentData),
+      });
+
+      if (response.ok) {
+        toast.success("Consulta atualizada com sucesso!");
+        // Recarregar a lista completa para garantir dados atualizados
+        await fetchAppointments(true);
+        setLoading(false);
+        return true;
+      } else if (response.status === 404) {
+        toast.warning("Consulta não encontrada.");
+        setLoading(false);
+      } else if (response.status === 400) {
+        const errorData = await response.json().catch(() => null);
+        if (errorData?.message) {
+          if (Array.isArray(errorData.message)) {
+            toast.warning("Dados inválidos: " + errorData.message.join(", "));
+          } else {
+            toast.warning(errorData.message);
+          }
+        } else {
+          toast.warning("Dados inválidos ou conflito de horário.");
+        }
+        setLoading(false);
+      } else if (response.status === 401) {
+        toast.warning("Sessão expirada. Faça login novamente.");
+        setLoading(false);
+      } else if (response.status >= 500) {
+        toast.error("Erro no servidor. Tente novamente mais tarde.");
+        setLoading(false);
+      } else {
+        toast.warning("Erro ao atualizar consulta.");
+        setLoading(false);
+      }
+    } catch (error) {
+      toast.error("Erro ao conectar com o servidor. Verifique sua conexão.");
+      setLoading(false);
+    }
+    return false;
+  };
+
+  // Deletar consulta
+  const deleteAppointment = async (
+    id: number,
+    patientName: string
+  ): Promise<boolean> => {
+    setLoading(true);
+
+    // Delay para evidenciar o loader
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    try {
+      const response = await fetch(`${API_URL}/appointments/${id}`, {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
+
+      if (response.ok) {
+        toast.success("Consulta removida com sucesso!");
+        // Recarregar a lista completa para garantir dados atualizados
+        await fetchAppointments(true);
+        setLoading(false);
+        return true;
+      } else if (response.status === 404) {
+        toast.warning("Consulta não encontrada.");
+        setLoading(false);
+      } else if (response.status === 401) {
+        toast.warning("Sessão expirada. Faça login novamente.");
+        setLoading(false);
+      } else if (response.status >= 500) {
+        toast.error("Erro no servidor. Tente novamente mais tarde.");
+        setLoading(false);
+      } else {
+        toast.warning("Erro ao remover consulta.");
+        setLoading(false);
+      }
+    } catch (error) {
+      toast.error("Erro ao conectar com o servidor. Verifique sua conexão.");
+      setLoading(false);
+    }
+    return false;
+  };
+
+  // Confirmar consulta
+  const confirmAppointment = async (id: number): Promise<boolean> => {
+    setLoading(true);
+
+    // Delay para evidenciar o loader
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    try {
+      const response = await fetch(`${API_URL}/appointments/${id}/confirm`, {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+      });
+
+      if (response.ok) {
+        toast.success("Consulta confirmada com sucesso!");
+        // Recarregar a lista completa para garantir dados atualizados
+        await fetchAppointments(true);
+        setLoading(false);
+        return true;
+      } else if (response.status === 404) {
+        toast.warning("Consulta não encontrada.");
+        setLoading(false);
+      } else if (response.status === 401) {
+        toast.warning("Sessão expirada. Faça login novamente.");
+        setLoading(false);
+      } else if (response.status >= 500) {
+        toast.error("Erro no servidor. Tente novamente mais tarde.");
+        setLoading(false);
+      } else {
+        toast.warning("Erro ao confirmar consulta.");
+        setLoading(false);
+      }
+    } catch (error) {
+      toast.error("Erro ao conectar com o servidor. Verifique sua conexão.");
+      setLoading(false);
+    }
+    return false;
+  };
+
+  // Cancelar consulta
+  const cancelAppointment = async (id: number): Promise<boolean> => {
+    setLoading(true);
+
+    // Delay para evidenciar o loader
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    try {
+      const response = await fetch(`${API_URL}/appointments/${id}/cancel`, {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+      });
+
+      if (response.ok) {
+        toast.success("Consulta cancelada com sucesso!");
+        // Recarregar a lista completa para garantir dados atualizados
+        await fetchAppointments(true);
+        setLoading(false);
+        return true;
+      } else if (response.status === 404) {
+        toast.warning("Consulta não encontrada.");
+        setLoading(false);
+      } else if (response.status === 401) {
+        toast.warning("Sessão expirada. Faça login novamente.");
+        setLoading(false);
+      } else if (response.status >= 500) {
+        toast.error("Erro no servidor. Tente novamente mais tarde.");
+        setLoading(false);
+      } else {
+        toast.warning("Erro ao cancelar consulta.");
+        setLoading(false);
+      }
+    } catch (error) {
+      toast.error("Erro ao conectar com o servidor. Verifique sua conexão.");
+      setLoading(false);
+    }
+    return false;
+  };
+
+  // Concluir consulta
+  const completeAppointment = async (id: number): Promise<boolean> => {
+    setLoading(true);
+
+    // Delay para evidenciar o loader
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    try {
+      const response = await fetch(`${API_URL}/appointments/${id}/complete`, {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+      });
+
+      if (response.ok) {
+        toast.success("Consulta concluída com sucesso!");
+        // Recarregar a lista completa para garantir dados atualizados
+        await fetchAppointments(true);
+        setLoading(false);
+        return true;
+      } else if (response.status === 404) {
+        toast.warning("Consulta não encontrada.");
+        setLoading(false);
+      } else if (response.status === 401) {
+        toast.warning("Sessão expirada. Faça login novamente.");
+        setLoading(false);
+      } else if (response.status >= 500) {
+        toast.error("Erro no servidor. Tente novamente mais tarde.");
+        setLoading(false);
+      } else {
+        toast.warning("Erro ao concluir consulta.");
+        setLoading(false);
+      }
+    } catch (error) {
+      toast.error("Erro ao conectar com o servidor. Verifique sua conexão.");
+      setLoading(false);
+    }
+    return false;
+  };
+
+  // Carregar consultas quando o hook é inicializado
+  useEffect(() => {
+    const token = getAuthToken();
+    if (token) {
+      fetchAppointments();
+    }
+  }, []);
+
+  return {
+    appointments,
+    loading,
+    fetchAppointments,
+    getAppointmentById,
+    createAppointment,
+    updateAppointment,
+    deleteAppointment,
+    confirmAppointment,
+    cancelAppointment,
+    completeAppointment,
+  };
+};

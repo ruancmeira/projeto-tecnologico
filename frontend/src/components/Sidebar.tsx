@@ -1,16 +1,8 @@
-
-import { useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { 
-  User, 
-  Calendar, 
-  Search, 
-  Edit,
-  ChartBar,
-  Key
-} from 'lucide-react';
+import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { User, Calendar, Search, Edit, ChartBar, Key } from "lucide-react";
 
 interface SidebarProps {
   activeTab: string;
@@ -22,19 +14,21 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
 
   const menuItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: ChartBar },
-    { id: 'patients', label: 'Pacientes', icon: User },
-    { id: 'doctors', label: 'Médicos', icon: User },
-    { id: 'appointments', label: 'Consultas', icon: Calendar },
-    { id: 'search', label: 'Pesquisar', icon: Search },
-    { id: 'reports', label: 'Relatórios', icon: ChartBar },
+    { id: "dashboard", label: "Dashboard", icon: ChartBar },
+    { id: "patients", label: "Pacientes", icon: User },
+    { id: "doctors", label: "Médicos", icon: User },
+    { id: "appointments", label: "Consultas", icon: Calendar },
+    { id: "search", label: "Pesquisar", icon: Search },
+    { id: "reports", label: "Relatórios", icon: ChartBar },
   ];
 
   return (
-    <div className={cn(
-      "bg-white border-r border-border h-screen flex flex-col transition-all duration-300",
-      collapsed ? "w-16" : "w-64"
-    )}>
+    <div
+      className={cn(
+        "bg-white border-r border-border h-screen flex flex-col transition-all duration-300",
+        collapsed ? "w-16" : "w-64"
+      )}
+    >
       {/* Header */}
       <div className="p-4 border-b border-border">
         <div className="flex items-center gap-3">
@@ -89,10 +83,10 @@ export const Sidebar = ({ activeTab, onTabChange }: SidebarProps) => {
         <Button
           variant="outline"
           size="sm"
-          className="w-full"
+          className="w-full bg-slate-100 border-slate-300 text-slate-700 hover:bg-slate-200 hover:text-slate-800"
           onClick={logout}
         >
-          {!collapsed ? 'Sair' : <Key className="h-4 w-4" />}
+          {!collapsed ? "Sair" : <Key className="h-4 w-4" />}
         </Button>
       </div>
     </div>

@@ -82,7 +82,7 @@ export const AdminSidebar = ({ activeTab, onTabChange }: AdminSidebarProps) => {
         <Button
           variant="outline"
           size="sm"
-          className="w-full border-slate-300 text-slate-700 hover:bg-slate-50 hover:text-slate-800 hover:border-slate-400 transition-all duration-200"
+          className="w-full bg-slate-100 border-slate-300 text-slate-700 hover:bg-slate-200 hover:text-slate-800 hover:border-slate-400 transition-all duration-200"
           onClick={logout}
         >
           <LogOut className="h-4 w-4 mr-2" />
