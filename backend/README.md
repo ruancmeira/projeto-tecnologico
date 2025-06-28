@@ -1,6 +1,6 @@
-# API de Consultas Médicas 🏥
+# API de Gestão Hospitalar 🏥
 
-Sistema completo para gerenciamento de consultas médicas desenvolvido com **NestJS**, **Prisma ORM** e **MySQL**.
+Backend do sistema de gestão hospitalar desenvolvido com **NestJS**, **Prisma ORM** e **MySQL**.
 
 ## 📋 Pré-requisitos
 
@@ -8,51 +8,63 @@ Antes de começar, certifique-se de ter instalado:
 
 - **Node.js** 18.0 ou superior ([Download aqui](https://nodejs.org/))
 - **Git** ([Download aqui](https://git-scm.com/))
-- **Docker** e **Docker Compose** (Para o banco de dados MySQL)
+- **Docker** e **Docker Compose** (recomendado para o banco de dados MySQL)
 
 ## 🚀 Instalação e Configuração
 
-### 1. Clone o repositório
+### Opção 1: Usando Docker (Recomendado)
+
+Se você quer executar todo o sistema (frontend + backend + banco), veja o [README principal](../README.md) na raiz do projeto.
+
+Para executar apenas o backend com Docker:
+
+```bash
+# Na pasta backend
+docker build -t hospital-backend .
+docker run -p 3333:3333 --env-file .env hospital-backend
+```
+
+### Opção 2: Instalação Manual
+
+#### 1. Clone o repositório (se ainda não tiver feito)
 
 ```bash
 git clone <url-do-repositorio>
-cd <nome-do-repositorio>
+cd <nome-do-repositorio>/backend
 ```
 
-### 2. Instale as dependências
+#### 2. Instale as dependências
 
 ```bash
 npm install
 ```
 
-### 3. Inicie o MySQL com Docker Compose
+#### 3. Configure o MySQL
 
-Execute o comando para iniciar o MySQL no Docker:
+Você pode usar o Docker para o MySQL:
 
 ```bash
-docker-compose up -d
+docker run --name mysql-hospital -e MYSQL_ROOT_PASSWORD=root -e MYSQL_DATABASE=projeto_tcc -e MYSQL_USER=user_projeto_tcc -e MYSQL_PASSWORD=user123 -p 9990:3306 -d mysql:8.0 --default-authentication-plugin=mysql_native_password
 ```
 
-> **Nota**: Este comando cria e inicia automaticamente um container MySQL com o banco `projeto_tcc`.
+#### 4. Configure as variáveis de ambiente
 
-### 4. Configure as variáveis de ambiente
-
-Crie um arquivo `.env` na raiz do projeto:
+Crie um arquivo `.env` na raiz da pasta backend:
 
 ```env
-# Database - Configuração para o MySQL do Docker
-DATABASE_URL="mysql://user_projeto_tcc:user123@localhost:9990/projeto_tcc?schema=public"
+# Database
+DATABASE_URL="mysql://user_projeto_tcc:user123@localhost:9990/projeto_tcc"
 
-# JWT Secret - GERE uma chave segura
-JWT_SECRET="seu-jwt-secret-muito-seguro-aqui-1234567890"
-JWT_EXPIRES_IN="1d"
+# JWT
+JWT_SECRET="FEmtDK8X15_p6IQP6GJA"
+JWT_EXPIRES_IN="30d"
 
 # Server
 PORT=3333
 NODE_ENV=development
 ```
 
-### 5. Configure o banco de dados
+#### 5. Configure o banco de dados
 
 Execute o comando para criar as tabelas e dados iniciais:
 
@@ -66,19 +78,24 @@ Este comando vai:
 - Inserir dados de exemplo (médicos e pacientes)
 - Criar um usuário administrador
 
-### 6. Inicie a aplicação
+#### 6. Inicie a aplicação
 
 ```bash
+# Modo desenvolvimento
 npm run start:dev
+
+# Modo produção
+npm run build
+npm run start:prod
 ```
 
-A aplicação estará rodando em: **http://localhost:3000**
+A API estará rodando em: **http://localhost:3333**
 
-## 📚 Acessar a Documentação
+## 📚 Documentação da API
 
 Após iniciar o servidor:
 
-- **Swagger UI**: http://localhost:3000/docs
+- **Swagger UI**: http://localhost:3333/docs
 - **Prisma Studio**: `npm run db:studio` (visualizar dados)
 
 ## 🔑 Credenciais do Administrador
@@ -86,7 +103,7 @@ Após iniciar o servidor:
 O sistema cria automaticamente um usuário administrador:
 
 ```
-Email: admin@hospital.com
+Email: admin@admin.com
 Senha: admin123
 ```
 
@@ -126,19 +143,19 @@ Todas as rotas (exceto registro e login) requerem autenticação JWT.
 
 ```bash
 # 1. Fazer login
-curl -X POST http://localhost:3000/v1/auth/login \
+curl -X POST http://localhost:3333/v1/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@hospital.com","password":"admin123"}'
+  -d '{"email":"admin@admin.com","password":"admin123"}'
 
 # 2. Copiar o "access_token" da resposta
 # 3. Usar em todas as outras requisições:
-curl -X GET http://localhost:3000/v1/patients \
+curl -X GET http://localhost:3333/v1/patients \
   -H "Authorization: Bearer SEU_TOKEN_AQUI"
 ```
 
 ### 2. Testando com Swagger
 
-1. Acesse: http://localhost:3000/docs
+1. Acesse: http://localhost:3333/docs
 2. Clique em "Authorize" 🔓
 3. Digite: `Bearer SEU_TOKEN_AQUI`
 4. Agora pode testar todos os endpoints!
@@ -147,15 +164,18 @@ curl -X GET http://localhost:3000/v1/patients \
 
 ### Autenticação
 
-- `POST /v1/auth/register` - Criar conta
-- `POST /v1/auth/login` - Fazer login
-- `GET /v1/auth/profile` - Ver perfil
+- `POST /v1/auth/login` - Fazer login e obter token JWT
+
+### Dashboard
+
+- `GET /v1/dashboard` - Obter dados do dashboard (contagens e próximas consultas)
 
 ### Usuários
 
 - `GET /v1/users` - Listar usuários
-- `GET /v1/users/me` - Meu perfil
+- `GET /v1/users/{id}` - Ver usuário específico
 - `PATCH /v1/users/{id}` - Atualizar usuário
+- `DELETE /v1/users/{id}` - Excluir usuário (com proteção para admin)
 
 ### Pacientes
 
@@ -163,16 +183,15 @@ curl -X GET http://localhost:3000/v1/patients \
 - `POST /v1/patients` - Criar paciente
 - `GET /v1/patients/{id}` - Ver paciente
 - `PATCH /v1/patients/{id}` - Atualizar paciente
-- `DELETE /v1/patients/{id}` - Excluir paciente
+- `DELETE /v1/patients/{id}` - Excluir paciente (com proteção para pacientes com consultas)
 
 ### Médicos
 
 - `GET /v1/doctors` - Listar médicos
 - `POST /v1/doctors` - Criar médico
 - `GET /v1/doctors/{id}` - Ver médico
-- `GET /v1/doctors/{id}/schedule` - Ver agenda do médico
 - `PATCH /v1/doctors/{id}` - Atualizar médico
-- `DELETE /v1/doctors/{id}` - Excluir médico
+- `DELETE /v1/doctors/{id}` - Excluir médico (com proteção para médicos com consultas)
 
 ### Consultas
 
@@ -180,8 +199,6 @@ curl -X GET http://localhost:3000/v1/patients \
 - `POST /v1/appointments` - Agendar consulta
 - `GET /v1/appointments/{id}` - Ver consulta
 - `PATCH /v1/appointments/{id}` - Atualizar consulta
-- `PATCH /v1/appointments/{id}/confirm` - Confirmar consulta
-- `PATCH /v1/appointments/{id}/cancel` - Cancelar consulta
 - `DELETE /v1/appointments/{id}` - Excluir consulta
 
 ## 📊 Status das Consultas
@@ -197,37 +214,21 @@ curl -X GET http://localhost:3000/v1/patients \
 
 ```bash
 # Verifique se o MySQL está rodando:
-sudo systemctl status mysql        # Linux
-brew services list | grep mysql    # macOS
-net start mysql                    # Windows
+docker ps | grep mysql
 
-# Teste a conexão:
-mysql -u root -p
+# Reinicie o container MySQL:
+docker restart mysql-hospital
 ```
 
-### ❌ Erro: "Database 'hospital_db' doesn't exist"
+### ❌ Erro: "Port 3333 already in use"
 
 ```bash
-# Crie o banco:
-mysql -u root -p -e "CREATE DATABASE hospital_db;"
-```
-
-### ❌ Erro: "Table doesn't exist"
-
-```bash
-# Recrie as tabelas:
-npm run db:reset
-```
-
-### ❌ Erro: "Port 3000 already in use"
-
-```bash
-# Mate o processo:
-lsof -ti:3000 | xargs kill -9  # Linux/macOS
-netstat -ano | findstr :3000   # Windows
+# Verifique qual processo está usando a porta:
+lsof -ti:3333 | xargs kill -9  # Linux/macOS
+netstat -ano | findstr :3333   # Windows
 
 # Ou altere a porta no .env:
-PORT=3001
+PORT=3334
 ```
 
 ### ❌ Erro: "JWT token invalid"
@@ -248,8 +249,14 @@ src/
 ├── common/
 │   └── filters/      # Tratamento de erros
 ├── prisma/           # Configuração ORM
-└── main.ts           # Bootstrap da aplicação
 ```
+
+## 🔒 Segurança
+
+- Todas as rotas (exceto login) são protegidas por JWT
+- Senhas são armazenadas com hash no banco de dados
+- Proteção contra exclusão de médicos e pacientes com consultas agendadas
+- Proteção especial para o usuário administrador (ID 1)
 
 ## 💾 Dados de Exemplo
 

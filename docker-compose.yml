@@ -1,0 +1,58 @@
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: projeto_tcc_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: user123
+      MYSQL_DATABASE: projeto_tcc
+      MYSQL_USER: user_projeto_tcc
+      MYSQL_PASSWORD: user123
+    ports:
+      - "9990:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    command: --default-authentication-plugin=mysql_native_password
+    networks:
+      - app-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: projeto_tcc_backend
+    restart: always
+    ports:
+      - "3333:3333"
+    environment:
+      - DATABASE_URL=mysql://user_projeto_tcc:user123@mysql:3306/projeto_tcc
+      - JWT_SECRET=FEmtDK8X15_p6IQP6GJA
+      - JWT_EXPIRES_IN=30d
+      - PORT=3333
+      - NODE_ENV=production
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: projeto_tcc_frontend
+    restart: always
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+volumes:
+  mysql_data:
+
+networks:
+  app-network:
+    driver: bridge
