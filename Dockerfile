@@ -6,7 +6,7 @@ WORKDIR /app/backend
 
 # Copiar apenas package.json primeiro para aproveitar cache das dependências
 COPY backend/package*.json ./
-RUN npm ci
+RUN npm install
 
 COPY backend/ ./
 RUN npm run build
@@ -19,7 +19,7 @@ WORKDIR /app/frontend
 
 # Copiar apenas package.json primeiro para aproveitar cache das dependências
 COPY frontend/package*.json ./
-RUN npm ci
+RUN npm install
 
 COPY frontend/ ./
 RUN npm run build
