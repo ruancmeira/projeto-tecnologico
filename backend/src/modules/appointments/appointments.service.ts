@@ -6,7 +6,7 @@ import {
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateAppointmentDto } from './dto/create-appointment.dto';
 import { UpdateAppointmentDto } from './dto/update-appointment.dto';
-import { $Enums } from '@prisma/client';
+import { AppointmentStatus } from '@prisma/client';
 
 @Injectable()
 export class AppointmentsService {
@@ -178,15 +178,15 @@ export class AppointmentsService {
   }
 
   async confirm(id: number) {
-    return this.update(id, { status: $Enums.AppointmentStatus.CONFIRMED });
+    return this.update(id, { status: AppointmentStatus.CONFIRMED });
   }
 
   async cancel(id: number) {
-    return this.update(id, { status: $Enums.AppointmentStatus.CANCELLED });
+    return this.update(id, { status: AppointmentStatus.CANCELLED });
   }
 
   async complete(id: number) {
-    return this.update(id, { status: $Enums.AppointmentStatus.COMPLETED });
+    return this.update(id, { status: AppointmentStatus.COMPLETED });
   }
 
   async getDashboardData() {
