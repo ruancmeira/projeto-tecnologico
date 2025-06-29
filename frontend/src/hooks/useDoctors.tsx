@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Doctor } from "@/types";
 import { toast } from "@/components/ui/sonner";
 
-const API_URL = "http://127.0.0.1:3333/v1";
+const API_URL = "http://18.229.232.250:3333/v1";
 
 export const useDoctors = () => {
   const [doctors, setDoctors] = useState<Doctor[]>([]);

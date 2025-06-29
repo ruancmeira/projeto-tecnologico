@@ -37,7 +37,7 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const API_URL = "http://127.0.0.1:3333/v1";
+  const API_URL = "http://18.229.232.250:3333/v1";
 
   useEffect(() => {
     const storedUser = localStorage.getItem("healthSystemUser");

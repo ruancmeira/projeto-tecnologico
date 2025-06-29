@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Appointment } from "@/types";
 import { toast } from "@/components/ui/sonner";
 
-const API_URL = "http://127.0.0.1:3333/v1";
+const API_URL = "http://18.229.232.250:3333/v1";
 
 export const useAppointments = () => {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
