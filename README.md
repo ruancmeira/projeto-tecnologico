@@ -106,3 +106,105 @@ Para desenvolvimento local, veja os READMEs específicos em cada pasta:
 - Agendamento de consultas
 - Dashboard com estatísticas
 - Gerenciamento de usuários
+
+## Executando o projeto com Docker
+
+### Usando o Dockerfile (único container)
+
+Este método cria um único container que contém a aplicação completa (frontend, backend e banco de dados MySQL).
+
+#### Passos para execução:
+
+1. **Construir a imagem Docker**:
+
+```bash
+docker build -t projeto-tecnologico .
+```
+
+2. **Executar o container**:
+
+```bash
+docker run -d -p 80:80 -p 3333:3333 --name projeto-tecnologico-container projeto-tecnologico
+```
+
+3. **Acessar a aplicação**:
+   - **Frontend**: http://localhost:80 ou simplesmente http://localhost
+   - **Backend API**: http://localhost:3333
+
+#### Comandos úteis:
+
+- **Visualizar logs**:
+
+```bash
+docker logs projeto-tecnologico-container
+```
+
+- **Parar o container**:
+
+```bash
+docker stop projeto-tecnologico-container
+```
+
+- **Iniciar um container existente**:
+
+```bash
+docker start projeto-tecnologico-container
+```
+
+- **Remover o container**:
+
+```bash
+docker rm projeto-tecnologico-container
+```
+
+### Usando o Docker Compose (múltiplos containers)
+
+Alternativamente, você pode usar o docker-compose para executar os serviços em containers separados:
+
+```bash
+docker-compose up -d
+```
+
+Isso iniciará três containers separados para o backend, frontend e MySQL conforme definido no arquivo docker-compose.yml.
+
+## Deploy no Fly.io
+
+Este projeto está configurado para ser facilmente implantado no Fly.io.
+
+### Pré-requisitos
+
+1. Instalar o Fly CLI: [https://fly.io/docs/hands-on/install-flyctl/](https://fly.io/docs/hands-on/install-flyctl/)
+2. Fazer login no Fly.io: `fly auth login`
+
+### Deploy
+
+Para fazer o deploy da aplicação:
+
+```bash
+# Se for o primeiro deploy:
+fly launch
+
+# Para atualizações:
+fly deploy
+```
+
+### Configuração
+
+O arquivo `fly.toml` já está configurado para:
+
+- Expor a porta 80 para o frontend (Nginx)
+- Expor a porta 3333 para a API (backend)
+- Usar banco de dados MariaDB interno
+
+### Monitoramento
+
+```bash
+# Ver logs da aplicação
+fly logs
+
+# Verificar status
+fly status
+
+# Abrir SSH na instância
+fly ssh console
+```
